@@ -1,0 +1,106 @@
+*#include <iostream> 
+#include <vector>
+
+using namespace std;
+
+class TicTacToe {
+private:
+    vector<vector<char>> board;
+    char currentMarker;
+    int currentPlayer;
+
+public:
+    TicTacToe() : board(3, vector<char>(3, ' ')), currentMarker('X'), currentPlayer(1) {}
+
+    void displayBoard() {
+        cout << "  1 2 3\n";
+        for (int i = 0; i < 3; ++i) {
+            cout << i + 1 << ' ';
+            for (int j = 0; j < 3; ++j) {
+                cout << board[i][j] << ' ';
+                if (j < 2) cout << '|';
+            }
+            cout << '\n';
+            if (i < 2) cout << "  -----\n";
+        }
+    }
+
+    bool makeMove(int row, int col) {
+        if (row < 0 || row >= 3 || col < 0 || col >= 3 || board[row][col] != ' ') {
+            return false;
+        }
+        board[row][col] = currentMarker;
+        return true;
+    }
+
+    bool checkWinner() {
+        // Check rows and columns
+        for (int i = 0; i < 3; ++i) {
+            if (board[i][0] == currentMarker && board[i][1] == currentMarker && board[i][2] == currentMarker) return true;
+            if (board[0][i] == currentMarker && board[1][i] == currentMarker && board[2][i] == currentMarker) return true;
+        }
+        // Check diagonals
+        if (board[0][0] == currentMarker && board[1][1] == currentMarker && board[2][2] == currentMarker) return true;
+        if (board[0][2] == currentMarker && board[1][1] == currentMarker && board[2][0] == currentMarker) return true;
+        return false;
+    }
+
+    bool isBoardFull() {
+        for (const auto& row : board) {
+            for (char cell : row) {
+                if (cell == ' ') return false;
+            }
+        }
+        return true;
+    }
+
+    void swapPlayer() {
+        currentMarker = (currentMarker == 'X') ? 'O' : 'X';
+        currentPlayer = (currentPlayer == 1) ? 2 : 1;
+    }
+
+    void playGame() {
+        cout << "Player 1, choose your marker (X or O): ";
+        char marker;
+        cin >> marker;
+        while (marker != 'X' && marker != 'O') {
+            cout << "Invalid marker! Please choose X or O: ";
+            cin >> marker;
+        }
+        currentMarker = marker;
+
+        displayBoard();
+
+        while (true) {
+            int row, col;
+            cout << "Player " << currentPlayer << " (" << currentMarker << "), enter your move (row and column): ";
+            cin >> row >> col;
+            row--; col--; // Adjust for 0-based index
+
+            if (!makeMove(row, col)) {
+                cout << "Invalid move! Please try again.\n";
+                continue;
+            }
+
+            displayBoard();
+
+            if (checkWinner()) {
+                cout << "Player " << currentPlayer << " wins!\n";
+                break;
+            }
+
+            if (isBoardFull()) {
+                cout << "It's a tie!\n";
+                break;
+            }
+
+            swapPlayer();
+        }
+    }
+};
+
+int main() {
+    TicTacToe game;
+    game.playGame();
+    return 0;
+}
